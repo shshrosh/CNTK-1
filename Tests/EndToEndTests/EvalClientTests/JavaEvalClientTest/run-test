@@ -1,0 +1,51 @@
+#!/bin/bash
+
+. $TEST_ROOT_DIR/run-test-common
+
+set -x
+
+# This test case is to test Java Evaluation works with the same setup of users.
+# For that purpose, the test needs to create some models and data in the Examples directories as expected by Java.
+# These files are removed by Jenkins during workspace cleanup.
+
+# The eval test uses some pretrained models which are not part of the CNTK repository itself
+# We use the dataset from an external location specified using an environment variable
+if [[ -z "$CNTK_EXTERNAL_TESTDATA_SOURCE_DIRECTORY" || ! -d "$CNTK_EXTERNAL_TESTDATA_SOURCE_DIRECTORY" ]]; then
+  echo This test uses external data that is not part of the CNTK repository. Environment variable CNTK_EXTERNAL_TESTDATA_SOURCE_DIRECTORY must be set to point to the external test data location.
+  exit 1
+fi
+
+if [ "$OS" == "Windows_NT" ]; then
+
+  # Copy pretrained models and data
+
+  if [ "$TEST_FLAVOR" == "release" ]; then
+    TEST_STRING="Release"
+  else
+    TEST_STRING="Debug"
+  fi
+
+  if [ "$TEST_DEVICE" == "cpu" ]; then
+    TEST_STRING=$TEST_STRING"_CpuOnly"
+  else
+    TEST_STRING=$TEST_STRING
+  fi
+
+
+  # Run the evaluation test
+  SOURCE_DIR="C:\\repos\\cntk"
+  DLL_DIR="C:\\repos\\cntk\\x64\\"$TEST_STRING
+  cd $TEST_BIN_DIR
+  ../../bindings/java/JavaEvalTest/run-java-test.cmd $SOURCE_DIR $DLL_DIR || exit $?
+
+  # Check whether any exceptions encountered
+  exit 0
+
+else
+  # Run the evaluation test
+  CNTK_ROOT=$TEST_BUILD_LOCATION/..
+  cd $TEST_BIN_DIR
+  $CNTK_ROOT/bindings/java/JavaEvalTest/run-java-test.bash $CNTK_ROOT $TEST_BUILD_LOCATION/$TEST_FLAVOR/lib || exit $?
+
+  exit 0
+fi
