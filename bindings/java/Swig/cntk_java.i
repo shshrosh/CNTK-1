@@ -49,6 +49,23 @@
 
 %include "managed_language_base.i"
 
+//Java, template taken from various.i
+%typemap(jni) (char* modelBuffer) "jbyteArray"
+%typemap(jtype) (char* modelBuffer) "byte[]"
+%typemap(jstype) (char* modelBuffer) "byte[]"
+%typemap(in) (char* modelBuffer) {
+  $1 = (char *) JCALL2(GetByteArrayElements, jenv, $input, 0); 
+}
+
+%typemap(argout) (char* modelBuffer) {
+  JCALL3(ReleaseByteArrayElements, jenv, $input, (jbyte *) $1, 0);
+}
+
+%typemap(javain) (char* modelBuffer) "$javainput"
+
+/* Prevent default freearg typemap from being used */
+%typemap(freearg) (char* modelBuffer) ""
+
 %typemap(javacode) CNTK::DeviceDescriptor %{
 
     public java.util.ArrayList<DeviceDescriptor> getAllDevices() {
