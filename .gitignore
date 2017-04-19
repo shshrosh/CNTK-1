@@ -244,7 +244,7 @@ bindings/java/SwigProxyClasses/**/*.java
 bindings/java/Swig/com/
 bindings/java/Swig/*.so
 bindings/java/JavaEvalTest/.idea
-bindings/java/JavaEvalTest/*.iml
+bindings/java/JavaEvalTest/data
 bindings/java/**/target
 bindings/java/**/*.jar
 
