@@ -5,9 +5,6 @@
 set -x
 
 # This test case is to test Java Evaluation works with the same setup of users.
-# For that purpose, the test needs to create some models and data in the Examples directories as expected by Java.
-# These files are removed by Jenkins during workspace cleanup.
-
 # The eval test uses some pretrained models which are not part of the CNTK repository itself
 # We use the dataset from an external location specified using an environment variable
 if [[ -z "$CNTK_EXTERNAL_TESTDATA_SOURCE_DIRECTORY" || ! -d "$CNTK_EXTERNAL_TESTDATA_SOURCE_DIRECTORY" ]]; then
@@ -17,24 +14,9 @@ fi
 
 if [ "$OS" == "Windows_NT" ]; then
 
-  # Copy pretrained models and data
-
-  if [ "$TEST_FLAVOR" == "release" ]; then
-    TEST_STRING="Release"
-  else
-    TEST_STRING="Debug"
-  fi
-
-  if [ "$TEST_DEVICE" == "cpu" ]; then
-    TEST_STRING=$TEST_STRING"_CpuOnly"
-  else
-    TEST_STRING=$TEST_STRING
-  fi
-
-
   # Run the evaluation test
   SOURCE_DIR="C:\\repos\\cntk"
-  DLL_DIR="C:\\repos\\cntk\\x64\\"$TEST_STRING
+  DLL_DIR=`cygpath -au $TEST_CNTK_BINARY`
   cd $TEST_BIN_DIR
   ../../bindings/java/JavaEvalTest/run-java-test.cmd $SOURCE_DIR $DLL_DIR || exit $?
 
