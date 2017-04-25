@@ -565,7 +565,7 @@ namespace CNTK
                             }
                             break;
                         }
-                        case PrimitiveOpType::GatherOp:
+                        case PrimitiveOpType::Gather:
                         {
                             assert(m_inputs.size() == 2);
                             auto inputShape1 = m_inputs[0].Shape();
