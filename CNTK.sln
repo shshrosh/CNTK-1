@@ -1517,6 +1517,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Java", "Java", "{14A0CC84-D182-47E3-817F-C14D7D7FE723}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CNTKLibraryJavaBinding", "bindings\java\Swig\CNTKLibraryJavaBinding.vcxproj", "{5D1972FA-F0A4-4035-8E63-8BAEF0230097}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E5606ECE-48CA-4464-BB12-09D81D02B9EF} = {E5606ECE-48CA-4464-BB12-09D81D02B9EF}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
