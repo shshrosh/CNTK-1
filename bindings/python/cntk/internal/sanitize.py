@@ -215,6 +215,20 @@ def sanitize_function(arg):
     return arg
 
 
+def sanitize_variable(arg):
+    '''
+    Tries to retrieve a Variable from the argument or throws an exception if
+    that's not possible.
+    '''
+    if isinstance(arg, cntk_py.Variable):
+        return arg
+    elif isinstance(arg, cntk_py.Function):
+        return arg.output
+    else:
+        raise TypeError("expected an instance of Variable or single-output "
+                        "Function, but got '%s' instead" % str(type(arg)))
+
+
 def sanitize_var_map(op_arguments, arguments, precision=None,
                      device=None, extract_values_from_minibatch_data=True):
     '''

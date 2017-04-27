@@ -1,17 +1,21 @@
+from os import path
+from enum import Enum, unique
+import warnings
+import collections
+
 from cntk import cntk_py, Value
 from cntk.device import DeviceDescriptor, cpu
 from cntk.internal import map_if_possible, typemap, sanitize_var_map,\
                           sanitize_batch, sanitize_dtype_cntk, _as_tuple,\
                           sanitize_variable_value_dict,\
                           sanitize_Function_attributes,\
+                          sanitize_variable,\
                           _value_as_sequence_or_array
 from cntk.internal.utils import get_python_function_arguments, \
                                 map_function_arguments, _py_dict_to_cntk_dict
 from cntk.internal import UserFunctionDeserializer
 from ..variables import Record, Variable
-from enum import Enum, unique
-from os import path
-import warnings
+
 
 @unique
 class CloneMethod(Enum):
@@ -655,7 +659,7 @@ class Function(cntk_py.Function):
              computation is. If `None`, the default device is used.
             as_numpy (bool): whether to return the result as a NumPy array. Default True.
              Specifying this as False returns a CNTK Value which avoids a
-             costly conversion but returns a somewhat opaque object. Also, the Value objects 
+             costly conversion but returns a somewhat opaque object. Also, the Value objects
              are temporary and only guaranteed to be valid until the next forward/eval/backward/grad call.
              You must explicitly clone the temporay Value objects if they need to be accessed later.
 
@@ -670,6 +674,16 @@ class Function(cntk_py.Function):
                                       None, device)
         if outputs is None:
             outputs = self.outputs
+        elif isinstance(outputs, collections.Iterable):
+            try:
+                outputs = [sanitize_variable(o) for o in outputs]
+            except TypeError:
+                raise TypeError("expected list of Variables or single-output "
+                                "Functions, but got [%s] instead" %
+                                ', '.join(str(type(o)) for o in outputs))
+
+        else:
+            outputs = [sanitize_variable(outputs)]
 
         output_map = {v: None for v in outputs}
         keep_for_backward = set(keep_for_backward or {})
